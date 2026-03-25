@@ -15,6 +15,7 @@ FROM eclipse-temurin:21-jre
 WORKDIR /app
 
 COPY --from=builder /app/target/demo-0.0.1-SNAPSHOT.jar app.jar
+COPY .env .env
 
 EXPOSE 8080
 ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT:-8080} -jar /app/app.jar"]
