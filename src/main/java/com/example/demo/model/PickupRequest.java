@@ -1,19 +1,28 @@
 package com.example.demo.model;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.hibernate.annotations.UuidGenerator;
+
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "pickup_requests")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PickupRequest {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @UuidGenerator
     private UUID id;
 
     private UUID donationId;
@@ -24,43 +33,7 @@ public class PickupRequest {
 
     private String status;
 
-    public UUID getId() {
-        return id;
-    }
+    private LocalDateTime pickupTime;
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public UUID getDonationId() {
-        return donationId;
-    }
-
-    public void setDonationId(UUID donationId) {
-        this.donationId = donationId;
-    }
-
-    public UUID getNgoId() {
-        return ngoId;
-    }
-
-    public void setNgoId(UUID ngoId) {
-        this.ngoId = ngoId;
-    }
-
-    public UUID getDriverId() {
-        return driverId;
-    }
-
-    public void setDriverId(UUID driverId) {
-        this.driverId = driverId;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
+    private LocalDateTime deliveryTime;
 }

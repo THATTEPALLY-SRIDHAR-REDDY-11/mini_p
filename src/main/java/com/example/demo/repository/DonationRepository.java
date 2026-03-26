@@ -10,4 +10,6 @@ import com.example.demo.model.Donation;
 public interface DonationRepository extends JpaRepository<Donation, UUID> {
 
     List<Donation> findByStatus(String status);
+
+    List<Donation> findByRestaurantId(UUID restaurantId);
 }

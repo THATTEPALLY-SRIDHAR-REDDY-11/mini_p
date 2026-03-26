@@ -1,10 +1,13 @@
 package com.example.demo.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import jakarta.annotation.PreDestroy;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +36,8 @@ public class PickupService {
     public PickupRequest requestPickup(PickupRequest pickupRequest) {
         pickupRequest.setStatus("REQUESTED");
         pickupRequest.setDriverId(null);
+        pickupRequest.setPickupTime(null);
+        pickupRequest.setDeliveryTime(null);
 
         Donation donation = donationService.getDonationById(pickupRequest.getDonationId());
         donation.setStatus("REQUESTED");
@@ -47,6 +52,20 @@ public class PickupService {
 
     public List<PickupRequest> getPickupsByDriver(UUID driverId) {
         return pickupRepository.findByDriverId(driverId);
+    }
+
+    public List<PickupRequest> getPickupsByNgo(UUID ngoId) {
+        return pickupRepository.findByNgoId(ngoId).stream()
+                .sorted((a, b) -> {
+                    LocalDateTime aTime = a.getDeliveryTime() != null
+                            ? a.getDeliveryTime()
+                            : (a.getPickupTime() != null ? a.getPickupTime() : LocalDateTime.MIN);
+                    LocalDateTime bTime = b.getDeliveryTime() != null
+                            ? b.getDeliveryTime()
+                            : (b.getPickupTime() != null ? b.getPickupTime() : LocalDateTime.MIN);
+                    return bTime.compareTo(aTime);
+                })
+                .toList();
     }
 
     @Transactional
@@ -71,6 +90,7 @@ public class PickupService {
     public PickupRequest collectFood(UUID pickupId) {
         PickupRequest pickup = getPickupById(pickupId);
         pickup.setStatus("COLLECTED");
+        pickup.setPickupTime(LocalDateTime.now());
         PickupRequest savedPickup = pickupRepository.save(pickup);
 
         Donation donation = donationService.getDonationById(savedPickup.getDonationId());
@@ -93,6 +113,7 @@ public class PickupService {
         }
 
         pickup.setStatus("DELIVERED");
+        pickup.setDeliveryTime(LocalDateTime.now());
         pickupRepository.save(pickup);
 
         Donation donation = donationService.getDonationById(pickup.getDonationId());
@@ -109,5 +130,10 @@ public class PickupService {
     public PickupRequest getPickupById(UUID pickupId) {
         return pickupRepository.findById(pickupId)
                 .orElseThrow(() -> new IllegalArgumentException("Pickup request not found: " + pickupId));
+    }
+
+    @PreDestroy
+    public void shutdownScheduler() {
+        scheduler.shutdown();
     }
 }

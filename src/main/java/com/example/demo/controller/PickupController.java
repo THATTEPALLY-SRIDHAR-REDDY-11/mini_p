@@ -40,6 +40,11 @@ public class PickupController {
         return pickupService.getPickupsByDriver(driverId);
     }
 
+    @GetMapping("/ngo/{ngoId}")
+    public List<PickupRequest> getPickupsByNgo(@PathVariable UUID ngoId) {
+        return pickupService.getPickupsByNgo(ngoId);
+    }
+
     @PutMapping("/assign/{pickupId}")
     public PickupRequest assignDriver(@PathVariable UUID pickupId, @RequestParam UUID driverId) {
         return pickupService.assignDriver(pickupId, driverId);

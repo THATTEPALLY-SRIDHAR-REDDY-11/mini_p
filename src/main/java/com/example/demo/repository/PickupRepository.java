@@ -11,5 +11,7 @@ public interface PickupRepository extends JpaRepository<PickupRequest, UUID> {
 
     List<PickupRequest> findByDriverId(UUID driverId);
 
+    List<PickupRequest> findByNgoId(UUID ngoId);
+
     List<PickupRequest> findByStatus(String status);
 }

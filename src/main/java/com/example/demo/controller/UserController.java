@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.model.LoginRequest;
 import com.example.demo.model.User;
 import com.example.demo.service.UserService;
 
@@ -24,6 +25,11 @@ public class UserController {
     @PostMapping
     public User registerUser(@RequestBody User user) {
         return userService.registerUser(user);
+    }
+
+    @PostMapping("/login")
+    public User login(@RequestBody LoginRequest loginRequest) {
+        return userService.login(loginRequest);
     }
 
     @GetMapping
